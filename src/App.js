@@ -4,7 +4,7 @@ import './App.css';
 
 
 function Modal(props) {
-  console.log(props.modalTitle)
+  
   return(
     <div className='modal'>
         <h4>{props.title[props.modalTitle]}</h4>
@@ -22,7 +22,10 @@ function App() {
   let [thumb, setThumb] = useState([0, 0, 0]);
   const [modal, setModal] = useState(false);
   const [modalTitle, setModalTitle] = useState(0);
-  
+  const [input, setInput] = useState("");
+  const [inputArr, setInputArr] = useState([]);
+
+
 
   const changeTitle = () => {
     let copy = [...title];
@@ -40,6 +43,21 @@ function App() {
     setModal((prev) => !prev)
   }
 
+  const showInput = (e) => {
+    setInput(e.target.value)
+  }
+
+  const submitInput = (e) => {
+    e.preventDefault();
+    setTitle([input, ...title]);
+    setThumb([0, ...thumb])
+    console.log(thumb)
+  }
+
+  const deleteList = (index) => {
+    setTitle(title.filter( (item, i) => i !== index ))
+  }
+
   return (
     <div>
       <div className='black-nav'>
@@ -50,26 +68,34 @@ function App() {
 
       <button onClick={changeTitle}>글수정</button>
 
+      <form onSubmit={submitInput}>
+      <input type='text' onChange={showInput}/>
+      <input type='submit' />
+      </form>
+
       {
         title.map( (item, i) => {
           return (
             <div className='list' key={i}>
               <h4 onClick={ () => {showModal(); setModalTitle(i)}}>{title[i]} 
-              <span onClick={ () => {
+              <span onClick={ (e) => {
+                e.stopPropagation();
                 let thumbCopy = [...thumb];
                 thumbCopy[i] = thumbCopy[i] + 1;
                 setThumb(thumbCopy)
               }}> 👍</span> { thumb[i] }
               </h4>
               <p>2월 17일 발행</p>
+              <button onClick={ () => {deleteList(i)} }>삭제</button>
             </div>
           )
         })
       }
       
+      
+      
       {modal ? <Modal title={title} changeTitle={changeTitle} modalTitle={modalTitle}/> : null }
       
-
     </div>
   );
 }
